@@ -1,6 +1,19 @@
-# Whisper Audio Transcription
+# Overview
 
-This tool transcribes audio files using OpenAI's Whisper API, breaking long audio into manageable chunks and providing both full transcription and timestamped segments.
+This repository provides an asynchronous audio transcription utility using OpenAI’s Whisper model. The script reads audio files, splits them into 10-minute chunks (to keep each chunk under ~25 MB), and concurrently transcribes each chunk. The final transcription is then compiled and written to disk, along with an optional segments file containing time-stamped text segments.
+
+### Features
+Uses asyncio to handle file I/O and concurrent chunk transcriptions for efficiency.
+
+### Configurable language
+You can optionally pass a two-letter language code (ISO 3166-1 alpha-2) to the script (e.g., en, fr, es). The default is English (en).
+
+### Chunk-based processing
+The script splits the audio into 10-minute chunks (configurable via CHUNK_DURATION_MS), making it easier to handle large audio files and keep them under the size limits for the Whisper API.
+
+### Transcribed segments with timestamps
+The script can produce a separate segments file (_segments.txt), displaying each recognized text segment with start and end timestamps.
+
 
 ## Prerequisites
 
@@ -12,9 +25,9 @@ This tool transcribes audio files using OpenAI's Whisper API, breaking long audi
 ## Installation
 
 1. Clone the repository and cd into the root directory:
-2. Install uv (if not already installed):
+2. Install uv (if not already installed). Read more here: [uv](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer)
 ```bash
-pip install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 3. Create and activate virtual environment:
 ```bash
@@ -35,23 +48,13 @@ uv sync
 OPENAI_API_KEY=your_key_here
 ```
 
-2. Modify audio file path in `whisper.py`:
-```python
-audio_file_path = "/path/to/audio/file.mp3"
-```
-
-3. Run the script:
+2. Run the script (with optional language code):
 ```bash
-python whisper.py
+python whisper.py /path/to/audio.mp3 [language_code]
 ```
 
-The script will:
-- Split audio into 10-minute chunks
-- Transcribe each chunk
-- Save full transcription as `{audio_name}_transcription.txt`
-- Save timestamped segments as `{audio_name}_segments.txt`
 
-## Important Notes
+## Important notes
 
 - Python version 3.9.10 is required for pydub compatibility
 - Large audio files will be processed in chunks
